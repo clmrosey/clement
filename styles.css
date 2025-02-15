@@ -127,6 +127,28 @@
     color: var(--bg-color);
     padding: 20px;
   }
+
+  /* Conteneur de la photo dans le header */
+.photo-container {
+  margin-bottom: 20px;  /* Espace sous la photo */
+  text-align: center;   /* Centre l'image horizontalement */
+}
+
+/* Style de la photo de profil */
+.profile-photo {
+  width: 150px;          /* Ajustez la taille selon vos préférences */
+  height: 150px;         /* Même valeur que width pour un rendu carré avant le border-radius */
+  border-radius: 50%;    /* Donne un effet circulaire */
+  object-fit: cover;     /* Recadre la photo si elle n'est pas parfaitement carrée */
+  border: 3px solid #fff;/* Léger contour blanc */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15); /* Ombre subtile pour mettre en valeur */
+  transition: transform 0.3s ease;       /* Effet au survol (optionnel) */
+}
+
+.profile-photo:hover {
+  transform: scale(1.03); /* Légère mise en avant au survol */
+}
+
   #profil h1 {
     font-family: var(--font-primary);
     font-size: 3em;
