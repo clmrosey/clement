@@ -6,49 +6,87 @@ document.addEventListener('DOMContentLoaded', function() {
       navLinks.classList.toggle('open');
     });
   });
-  
-  /*// Changement dynamique de la barre de navigation lors du scroll
-  //const navbar = document.getElementById('navbar');
-  //window.addEventListener('scroll', function() {
-   // if (window.scrollY > 50) {
-      navbar.style.background = 'var(--nav-bg)';
-      navbar.style.padding = '10px 0';
-    } else {
-      navbar.style.background = 'transparent';
-      navbar.style.padding = '20px 0';
-    }
-  });*/
 
+  // Changement de la barre de navigation lors du scroll
   window.addEventListener('scroll', function() {
     const navbar = document.getElementById('navbar');
     if (window.scrollY > 0) {
       navbar.classList.add('fixed-nav');
     } else {
-      navbar.classList.remove('fixed-nÒav');
+      navbar.classList.remove('fixed-nav');
     }
   });
-  
-  // Effet de translation au scroll pour les sections
-  const sections = document.querySelectorAll('section');
+
+  // Effet de parallaxe sophistiqué pour le header
   let latestScrollY = 0;
   let ticking = false;
-  function onScroll() {
+
+  function parallaxScroll() {
     latestScrollY = window.scrollY;
     if (!ticking) {
-      window.requestAnimationFrame(update);
+      window.requestAnimationFrame(updateParallax);
       ticking = true;
     }
   }
-  function update() {
-    sections.forEach(section => {
-      const speed = parseFloat(section.dataset.speed) || 1;
-      const yPos = -(latestScrollY * speed / 20);
-      section.style.transform = `translateY(${yPos}px)`;
+
+  function updateParallax() {
+    // Parallaxe pour les couches du header
+    const parallaxLayers = document.querySelectorAll('.parallax-layer');
+    parallaxLayers.forEach(layer => {
+      const speed = parseFloat(layer.dataset.speed) || 0.5;
+      const yPos = latestScrollY * speed;
+      layer.style.transform = `translateY(${yPos}px)`;
     });
+
+    // Parallaxe pour le contenu du hero
+    const heroContent = document.querySelector('.hero-content');
+    if (heroContent) {
+      const speed = parseFloat(heroContent.dataset.speed) || 0.2;
+      const yPos = latestScrollY * speed;
+      heroContent.style.transform = `translateY(${yPos}px)`;
+    }
+
+    // Parallaxe pour les sections
+    const sections = document.querySelectorAll('section');
+    sections.forEach(section => {
+      const rect = section.getBoundingClientRect();
+      const speed = parseFloat(section.dataset.speed) || 0.5;
+
+      // Calculer le décalage basé sur la position de la section
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        const scrolled = window.innerHeight - rect.top;
+        const rate = scrolled * speed / 50;
+        section.style.transform = `translateY(${-rate}px)`;
+      }
+    });
+
     ticking = false;
   }
-  document.addEventListener('scroll', onScroll, { passive: true });
-  
+
+  document.addEventListener('scroll', parallaxScroll, { passive: true });
+
+  // Animation d'apparition des sections au scroll
+  document.addEventListener("DOMContentLoaded", function() {
+    const sections = document.querySelectorAll('section');
+
+    const sectionObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('section-visible');
+          // On peut dé-observer si on veut que l'animation ne se joue qu'une fois
+          // sectionObserver.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    });
+
+    sections.forEach(section => {
+      sectionObserver.observe(section);
+    });
+  });
+
   // Animation des barres de progression pour les outils avec IntersectionObserver
   document.addEventListener("DOMContentLoaded", function() {
     const progressElements = document.querySelectorAll('.progress');
@@ -62,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       });
     }, { threshold: 0.5 });
-    
+
     progressElements.forEach(el => {
       observer.observe(el);
     });
